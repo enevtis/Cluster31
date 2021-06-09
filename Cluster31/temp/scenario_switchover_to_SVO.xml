@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<scenario id="switchover_to_SVO">
+<scenarioSteps>
+    <step id="1">
+        <node>mlk-bo-asp</node><pack>APP-BO</pack><action>stop</action><descr> остановка пакета SAP BO BI</descr><wait_status>no</wait_status>
+    </step>
+    <step id="2">
+        <node>svo-bo-dbp</node><pack>DB-HANA</pack><action>switch_to_svo</action><descr>switchover_to SVO</descr><wait_status>U</wait_status>
+    </step>	
+   <step id="3">
+        <node>svo-bo-asp</node><pack>APP-BO</pack><action>start</action><descr> запуск пакета SAP BO BI</descr><wait_status></wait_status>
+    </step>	
+ 	<step id="4">
+        <node>svo-bo-dbp</node><pack>IP-BP-CI</pack><action>start</action><descr>изменение DNS записи</descr><wait_status></wait_status>
+    </step>
+
+	<step id="5">
+        <node>mlk-bo-dbp</node><pack>DB-HANA</pack><action>stop</action><descr>остановка SAP HANA для secondary регистрации</descr><wait_status>D</wait_status>
+    </step>	
+	<step id="6">
+        <node>mlk-bo-dbp</node><pack>DB-HANA</pack><action>register_MLK_as_sec</action><descr>регистрация SAP HANA как secondary</descr><wait_status>U</wait_status>
+    </step> 
+	<step id="7">
+        <node>mlk-bo-dbp</node><pack>DB-HANA</pack><action>start</action><descr>запуск SAP HANA как secondary</descr><wait_status></wait_status>
+    </step>
+</scenarioSteps>
+</scenario>

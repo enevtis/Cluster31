@@ -1,0 +1,280 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+	<link rel="icon" href="../img/nvs.png">
+    <title>help</title>
+    <link rel="stylesheet" href="../src/style.css">
+   </head>
+  <body>
+<h3>Content</h3>   
+<ul>
+<li><a href="#descr">Description</a>
+<li><a href="#inst_linux">Installation on Linux</a>
+<li><a href="#inst_aix">Installation on AIX</a>
+<li><a href="#inst_windows">Installation on Windows</a>
+<li><a href="#conf">Configuration</a>
+<li><a href="#oper">Operations</a>
+<li><a href="#sup_typ_res">Supported types of resources</a>
+<li><a href="#impact">impact on managed systems</a>
+<li><a href="#glossary">Glossary</a>
+<li><a href="#lic">License</a>
+<li><a href="/help?page=examples">Examples</a>
+<li><a href="/help?page=saphanaadmin">SAP HANA administration tips</a>
+</ul>
+
+<a id="#descr"><h3>Description</h3></a>
+
+NVS simple cluster manager 3.0 is intended for management and control mainly SAP &reg; and Oracle &reg; systems in high-available environment.
+Current version support any number of cluster nodes, restricted only by performance point of view.<br>
+In any moment of time there must be only one node with master role. Another nodes are passive and controlled by master.
+Master executes pre-written scenario for some situations: after reboot, switchover or failover.<br>
+You can control cluster behavior correcting scenario as you wish. <br>
+
+It contains:<br>
+<ul>
+<li>cluster agent , which is installed on every host cluster and manages packages and resources ( database, application server, etc.)
+<li>single separated quorum server which is a optional service on any separate server beyond cluster(s). The main task of quorum server is to observe what host marked as main in cluster failed
+and to send command to failover system to slave. 
+<br>The same server can work as agent or quorum. It depends from its settings.
+</ul>
+
+ 
+
+<a id="inst_linux"><h3>Installation on Linux</h3></a>
+
+<ol>
+<li>download last version distributive package from <a href="http://www.nvs-itech.com">http://www.nvs-itech.com</a>.
+<li>make as root new folder and copy .tgz archive to it:<br> 
+<code>
+mkdir /distr<br>
+cp cluster&ltversion&gt.tgz /distr/<br>
+</code>
+<li>extract archive<br>
+<code>tar -xf cluster&ltversion&gt.tgz</code>
+<li>run installation utility and follow futher instructions.<br>  
+<code>
+cd /distr/distr/<br>
+./install
+</code>
+</ol>
+
+
+after default installation will be created following folders: <br>
+<code>
+<table border='1'>
+<tr><td>/usr/nvs/clu </td><td> base directory </td></tr>
+<tr><td>/usr/nvs/clu/conf </td><td> config directory (valid only for cluster agent)</td></tr>
+<tr><td>/usr/nvs/clu/conf/scripts </td><td> auxiliary scripts for cluster (valid only for cluster agent)</td></tr>
+<tr><td>/usr/nvs/clu/remote </td><td> config directory for remote systems (valid only for quorum-server)</td></tr>
+<tr><td>/usr/nvs/clu/jvm </td><td> java virtual machine version 1.8 SDK or link on buld-in one</td></tr>
+<tr><td>/usr/nvs/clu/lib </td><td> library for thirg-party components</td></tr>
+<tr><td>/usr/nvs/clu/log </td><td> log folder</td></tr>
+<tr><td>/usr/nvs/clu/cpp </td><td> auxilary folder for compilation executables</td></tr>
+<tr><td>/usr/nvs/clu/tmp </td><td> temporary folder where cluster keeps some files</td></tr>
+</table>
+</code><br>
+* Base folder /usr/nvs/clu has a short link /clu<br><br><br>
+
+If installation was successful, there will be new unix-service nvs-clu.service (for cluster agent) or nvs-quorum.service (for quorum server): <br>
+check:<br>
+<code>
+<br>
+&nbsp;systemctl status nvs-clu.service <br>
+<br>
+● nvs-clu.service - NVS Cluster Service<br>
+&nbsp;Loaded: loaded (/etc/systemd/system/nvs-clu.service; enabled; vendor preset: disabled)<br>
+&nbsp;&nbsp;Active: active (running) since Wed 2020-01-15 13:40:41 MSK; 18h ago<br>
+&nbsp;&nbsp;Main PID: 1515 (nvsclu)<br>
+&nbsp;&nbsp;&nbsp;Tasks: 70 (limit: 512)<br>
+&nbsp;&nbsp;CGroup: /system.slice/nvs-clu.service<br>
+&nbsp;&nbsp;&nbsp;└─1515 /usr/nvs/clu/nvsclu<br>
+</code>
+<br> 
+Graphical user interface will be available at <b>https://&lthostname&gt:1234</b><br>
+&nbsp;user: admin<br>
+&nbsp;password: admin<br>
+<p style="color:red;">For security reason don't forget to change default credentials during configuration!</p>
+
+
+
+<a id="inst_aix"><h3>Installation on AIX</h3></a>
+<code>
+mkdir /usr/nvs/<br>
+cp cluster&ltversion&gt.tgz /usr/nvs/<br>
+</code>
+<li>extract archive<br>
+<code>tar -xf cluster&ltversion&gt.tgz</code>
+<li>make service with autostart and reboot<br>  
+<code>
+cd /usr/nvs/clu/<br>
+mkitab "nvs:2:respawn:/usr/nvs/clu/aix_start.sh > /dev/console 2>&1"<br>
+reboot<br>
+</code>
+
+
+
+<a id="inst_windows"><h3>Installation on Windows</h3></a>
+In developmen stage.<br><br>
+
+
+After installation finished , cluster manager is ready for configuration.
+<a id="conf"><h3>Configuration</h3></a>
+
+Cluster agent keeps its configuration in /usr/nvs/clu/conf/ directory:
+<ul>
+<li>common.properties - common cluster parameters , like cluster name, credentials , timeouts.
+<li>nodes.xml - keeps nodes, packages and resources .
+<li>scenario_*.xml - information about what steps master node has to do in different situations.
+
+</ul>
+
+You can find template these files just after installation in folder <i>/clu/conf</i> and edit as you need.<br>
+After you edited these files, just copy them to second node and restart nvs-clu.service <br>
+<br><code>
+systemctl stop nvs-clu.service<br>
+systemctl start nvs-clu.service
+</code><br>
+<br>or:<br>
+<br><code>
+/clu/restartService.sh (Linux) <br>
+/clu/aix_restartService.sh (AIX)<br>
+</code>
+
+<br><br>
+In case using quorum server , copy folder from any node of cluster to folder <i>/clu/conf</i><br>
+for example cluster called ERP:<br>
+<br><code>
+scp -r /clu/conf &lt;guorum-server&gt;:/clu/remote/ERP<br>
+</code><br>
+<b>It is strongly recommended to edit all scripts and settings on one node and then propagate them
+across the cluster in order keep the same configuration for all nodes.</b>
+<br>
+
+
+
+<br>
+All canges you will see immediate in GUI http://&lthostname&gt:1234.
+
+<h4>common.properties</h4>
+<code>
+<table border='1'>
+<tr><td>Parameter</td><td>example value</td><td>description</td></tr>
+<tr><td>clusterName</td><td>EAP-cluster</td><td>any human readable name</td></tr>
+<tr><td>webServicePort</td><td>1234</td><td>port for GUI (https://). You can use any free port which you like.</td></tr>
+<tr><td>webAdminUser</td><td>admin</td><td>user for GUI. Don't forget change! </td></tr>
+<tr><td>webAdminPassword</td><td>admin</td><td>password for GUI. Don't forget change!</td></tr>
+<tr><td>autoServiceStart</td><td>true</td><td>enable auto control cluster. Autostart after boot server and etc. </td></tr>
+<tr><td>autoServiceFirstDelaySec</td><td>30</td><td>Delay before autoservice start. </td></tr>
+<tr><td>autoServiceIntervalSec</td><td>300</td><td>Interval autoservice running</td></tr>
+<tr><td>QuorumServerIp</td><td>192.168.30.231</td><td>IP quorum server. Only from this address all commands will be executed. All others will be ignored</td></tr>
+<tr><td>backgroundColor</td><td>#f09a95</td><td>You can associate cluster with any colour for convinientness</td></tr>
+<tr><td>refreshGuiIntervalSec</td><td>5</td><td>Interval statuses refreshing in browser</td></tr>
+<tr><td>debugInfo</td><td>false</td><td>Some additional info in logs</td></tr>
+<tr><td>interfaceLang<td>EN</td><td>Available: EN, DE ,RU</td></tr>
+
+</table>
+</code>
+
+<h4>nodes.xml</h4>
+<code>
+<h4>node parameters: &lt;node&gt;</h4>
+<table border='1'>
+<tr><td>Parameter</td><td>example value</td><td>description</td></tr>
+<tr><td>ip</td><td>192.168.30.21</td><td>main IP address of node</td></tr>
+<tr><td>descr</td><td>Database server in MSK Datacenter</td><td>any description of node</td></tr>
+<tr><td>hostname</td><td>mlk-erp-pra</td><td>main hostname of node</td></tr>
+<tr><td>clusterName</td><td>MLK</td><td>name in replication scheme(SAP HANA) or db_unique_name in Oracle Data Guard configuration.</td></tr>
+<tr><td>canBeMaster</td><td>yes</td><td>That node can be master. Usually database node with replication</td></tr>
+<tr><td>image</td><td>slade</td><td>Image for GUI. Can be slade or bigtower</td></tr>
+<tr><td>left,top</td><td>120,150</td><td>Position image on screen in GUI</td></tr>
+</table>
+
+<h4>package parameters: &lt;pack&gt;</h4>
+<table border='1'>
+<tr><td>Parameter</td><td>example value</td><td>description</td></tr>
+<tr><td>id</td><td>APP-BO</td><td>any name</td></tr>
+</table>
+
+<h4>resource parameters: &lt;res&gt;</h4>
+<table border='1'>
+<tr><td>Parameter</td><td>example value</td><td>description</td></tr>
+<tr><td>id</td><td>Tomcat</td><td>any name</td></tr>
+</table>
+
+</code>
+
+<br>Some examples you can see in distributive or here: <a href="help?page=examples">examples</a>
+
+
+<h4>scenario_*.xml</h4>
+<code>
+<table border='1'>
+<tr><td>Parameter</td><td>example value</td><td>description</td></tr>
+<tr><td>node</td><td>server-db1</td><td>node name</td></tr>
+<tr><td>pack</td><td>APP-BO</td><td>name of package</td></tr>
+<tr><td>action</td><td>start</td><td>instruction for execution</td></tr>
+<tr><td>descr</td><td>start of first node</td><td>any description of step</td></tr>
+<tr><td>wait</td><td>yes</td><td>is there need to wait of finish operation or not.</td></tr>
+<tr><td>pause</td><td>10</td><td>safe pause 10 sec before next step</td></tr>
+<tr><td>status</td><td>replication_status.sh</td><td>optionally.Script which returns status.</td></tr>
+</table>
+</code>
+<br>Some examples you can see in distributive or here: <a href="help?page=examples">examples</a>
+
+<a id="oper"><h3>Operations</h3></a>
+
+With help NVS cluster manager just from GUI you can :
+<ul>
+<li>start and stop single resource.
+<li>start and stop single package which contains several resources in correct sequences.
+<li>enable and disable auto service of each host of cluster in order to manage cluster manually.
+<br> if need you can manually created or delete file for lock auto service:<br>
+<br>
+<code>
+touch /clu/tmp/pause<br>
+find /clu/tmp/pause -delete
+</code>
+<br>
+<br>
+When manager finds pause file it shows grey icon: <img src='img/master_passive.png'>
+<br>
+that means that autoservice is disabled and master does nothing by himself.
+<br><br><br>
+When master executes a scenario, it creates flag /clu/tmp/scenario. With it any another scenarion aren't executed.<br>
+If scenario was broken , check flag and delete it.
+
+</ul>
+
+<a id="sup_typ_res"><h3>Supported types of resources</h3></a>
+From simple cluster manager point of view all resource are abstract. Every resource has set of controlling scripts with determine names.<br>
+For example resource with id="Tomcat" has to have at least 3 scripts in /clu/conf/scripts:
+<ul>
+<li>Tomcat_start.sh - for start of resource.
+<li>Tomcat_stop.sh - for stop (or sometime just kill).
+<li>Tomcat_status.sh - for determine status:
+it must return one symbol:<br>
+<img src='img/U.png'><q style='font-weight:bold'>U</q> - Up or Running or green arrow up.<br>
+<img src='img/W.png'><q style='font-weight:bold'>W</q> - Waiting or yellow sand watch.<br>
+<img src='img/D.png'><q style='font-weight:bold'>D</q> - Down or gray down arrow.<br>
+<img src='img/E.png'><q style='font-weight:bold'>E</q> - Error or red cross.<br>
+</ul>
+
+
+
+<a id="impact"><h3>Impact on managed systems</h3></a>
+<i>NVS simple cluster manager</i> is additional unix or windows-service, which executes command like system administrator and doesn't change any structures or settings of managed systems.
+<br> You can stop, restart , update or even delete service without any harm for work of controlled systems. Of course you can do it in idle time , not during executing command sequence.  
+
+
+<a id="glossary"><h3>Glossary</h3></a>
+<ul>
+<li><b>Resource:</b> Sort of components or program like IP address, database or application server.
+<li><b>Package:</b> Set of resources , which is as one logical unit. For example IP address, database and central instance of product. 
+Every package has fixed secuence of start and stop resources , belonged to it. 
+<li><b>Graphical User Interface(GUI):</b> html page which shows in any modern browser status all components of cluster and control them with context menu.
+</ul>
+<a id="lic"><h3>License</h3></a>
+NVS simple cluster manager is under GNU Public License.
+</body>
+</html>

@@ -1,0 +1,142 @@
+<project default="jar">
+<!--
+http://ant.apache.org/manual/tutorial-HelloWorldWithAnt.html
+-->
+
+       
+        <property name="output.jar.name"    value="NvsCluster.jar"/>
+        <property name="version"            value="3.0"/>
+        <property name="main.class.name"    value="cluster3.nvs.com.Cluster3Main"/> 
+ 
+        <property name="dev.home.dir"       value="C:\dev\greenex2\"/>
+ 
+ 
+        <property name="ant.project.name"   value="Cluster3"/> 
+        <property name="lib.dir"            value="${dev.home.dir}/${ant.project.name}/lib"/>
+        <property name="src.dir"            value="${dev.home.dir}/${ant.project.name}/src"/>
+        <property name="res.dir"            value="${dev.home.dir}/${ant.project.name}/resources"/>
+
+
+        
+        <tstamp><format property="time.stamp" pattern="yyyyMMddHHmm"/></tstamp>
+ 
+        
+        <property name="build.dir"          value="${dev.home.dir}/${ant.project.name}/build"/>
+        <property name="classes.dir"        value="${dev.home.dir}${ant.project.name}/build/classes"/> 
+        <property name="jar.dir"            value="${dev.home.dir}${ant.project.name}/out"/>  
+        
+
+	<property name="mnt_1.dir"      value="E:\"/>
+	<property name="mnt_5.dir"     	value="X:\9_111\cluster\"/>
+
+
+
+ 
+        <!-- for external libraries -->       
+        <path id="classpath">
+                <fileset dir="${lib.dir}" includes="**/*.jar"/>
+            </path>
+
+        <!-- delete all before building -->    
+  
+            
+      <path id="build-classpath">
+        <fileset dir="${build.dir}">
+            <include name="*.jar"/>
+        </fileset>
+        </path>      
+            
+    <manifestclasspath property="lib.list" jarfile="${build.dir}/${jar.file}">
+        <classpath refid="build-classpath" />
+    </manifestclasspath>
+          
+            
+            
+        <target name="clean">
+            <delete dir="${build.dir}"/>
+        </target>
+
+    
+         <!-- from .java to .class with templates-->    
+    <target name="compile" depends="clean" >
+        <mkdir dir="${classes.dir}"/>
+        <javac encoding="UTF-8" srcdir="${src.dir}" destdir="${classes.dir}" 
+               classpathref="classpath" includeantruntime="false" 
+		target="1.8" source="1.8"	
+		bootclasspath="C:\Program Files\Java\jre1.8.0_231\lib\rt.jar"	>
+        
+            <!--            <src path="${src.template.dir}"/> -->
+
+
+ 
+            
+            </javac>
+                 <!-- copy resourses for including to jar --> 
+                <copy todir="${classes.dir}">
+                    <fileset dir="${src.dir}" excludes="**/*.java"/>
+                </copy>
+                
+ 
+                <mkdir dir="${classes.dir}/resources"/>
+                
+                <copy todir="${classes.dir}/resources">
+                    <fileset dir="${res.dir}"/>
+                </copy>               
+                
+                
+    </target>
+
+ 
+    
+          <!-- create jar -->      
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${output.jar.name}" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class.name}"/>
+                <attribute name="Class-Path" value=". lib/"/>
+                
+                <attribute name="Soft-Vendor"  value="nvs-itech.com"/>
+                <attribute name="Soft-Title"   value="nvs cluster"/>
+                <attribute name="Soft-Version" value="${version}.${time.stamp}"/>
+                
+            </manifest>
+        </jar>
+                
+                <copy file="${jar.dir}/${output.jar.name}" todir="${mnt_1.dir}"/>
+               <copy file="${jar.dir}/${output.jar.name}" todir="${mnt_5.dir}"/>
+
+
+	
+  	<exec executable="cmd">
+    	<arg value="/c"/>
+   	<arg value="C:\dev\greenex2\Cluster3\ant\restart_one_node_single.bat"/> 
+     	</exec>
+
+
+        
+    </target>
+
+
+    <!-- running jar -->
+
+    <target name="run" depends="jar">
+        <java fork="true" classname="${class.name}">
+         <arg value="-h"/>
+                   <classpath>
+                           <pathelement location="${GrinexHome.dir}/${ant.project.name}.jar"/>
+                           <pathelement path="${lib.dir}/*"/>
+                        
+
+                        <!-- <path location="${jar.dir}/${ant.project.name}.jar"/> -->
+            </classpath>
+        </java>    
+    </target>
+
+ 
+    
+    <target name="clean-build" depends="clean,jar"/>
+    <target name="main" depends="clean,run"/>
+    
+    
+</project>

@@ -1,0 +1,214 @@
+
+status?act=show_script_status&script=HD1_replication_status.sh - проверить статус который выдает скрипт HD1_replication_status.sh
+send?act=run_script&script=HD1_takeover.sh	- выполнить скрипт HD1_takeover.sh
+https://192.168.20.81:1234/send?act=set_global_master&master=mlk-server01	- разослать по всем нодам, которые могут быть мастерами, сменить мастера.
+https://192.168.20.83:1234/send?act=set_global_master&master=svo-server02
+https://192.168.20.81:1234/send?act=set_local_master&master=mlk-server01 - проверить флаг у себя, если нужно установить, если нет - удалить.
+
+https://192.168.20.81:1234/send?act=start_scenario&scenario=takeover_to_MLK - выполнить сценарий перевода
+
+
+https://192.168.20.81:1234/status?act=show_quorum_info - запрос кворум сервера.
+
+HttpsRequestor r = new HttpsRequestor(gData);
+r.checkNode("ip") - доступность сервера по IP
+
+
+String url = "https://" + n.params.get("ip") + ":";
+				url += this.commonParams.get("webServicePort") + "/";
+				url += "status?act=show_are_you_master";
+String resp = r.doGetRequest(url);	- получить текстовый ответ.
+
+
+
+
+netstat -ano | findstr 8080 
+taskkill /F /PID pid_number
+
+
+gData.setSocketCommand(hostName,"execCmd", "start:mlk-erp-pra_ERP-prim"); 
+
+-> CommandServicePort -> socket SocketRequest(cmdText,cmdParam)
+
+-> CmdService.processRequest
+
+-> case "execCmd":	
+
+	longCmdExecuter lce = new longCmdExecuter(gData, parameters);
+	gData.executorService.execute(lce)
+
+-> longCmdExecuter.runLongCommand
+
+
+Сканирование по структуре кластера
+
+
+По глобальным параметрам
+/*		
+		 for (Map.Entry mapElement : srv.gData.commonParams.entrySet()) { 
+	            String key = (String)mapElement.getKey(); 
+	            String value = (String)mapElement.getValue(); 
+	            srv.gData.logger.info(key + " : " + value); 
+	        } 
+*/
+
+По узлам кластера 
+
+		 for (CluNode n: srv.gData.nodes) {
+//			 srv.gData.logger.info("node:" + n.params.get("staticIp") + " " + n.params.get("hostname"));
+		 
+			 for (Map.Entry mapElement : n.params.entrySet()) { 
+		            String key = (String)mapElement.getKey(); 
+		            String value = (String)mapElement.getValue(); 
+//		            srv.gData.logger.info(key + " : " + value); 
+		        } 		 
+		 
+		 
+		 }
+
+
+По пакетам и их ресурсам
+		 for (CluPackage p: srv.gData.packages) {
+			 
+			 for (Map.Entry mapElement : p.params.entrySet()) { 
+		            String key = (String)mapElement.getKey(); 
+		            String value = (String)mapElement.getValue(); 
+//		            srv.gData.logger.info("package = " + key + " : " + value); 
+		        } 				 
+			 
+			 
+			 	for (CluResource r: p.resources) {
+			 		
+					 for (Map.Entry mapElement : r.params.entrySet()) { 
+				            String key = (String)mapElement.getKey(); 
+				            String value = (String)mapElement.getValue(); 
+				            srv.gData.logger.info("package = " + p.params.get("name") + " :: " + key + "=" + value); 
+				        }			 		
+			 	}
+			 
+//			 srv.gData.logger.info("package:" + p.params.get("name"));
+		 }
+		 
+// JSON массив из хостов		 
+ {
+  "hosts": [
+    {
+      "host": "mlk-clu-01"
+    },
+    {
+      "host": "svo-clu-02"
+    }
+  ]
+}
+// добавляем массив пакетов
+{
+  "hosts": [
+    {
+      "host": "mlk-clu-01",
+      "packages" : []
+    },
+    {
+      "host": "svo-clu-02",
+      "packages" : []
+    }
+  ]
+}
+
+//
+
+{
+  "hosts": [
+    {
+      "host": "mlk-clu-01",
+      "packages" : [
+       { "pkg":"EAP-sec"  },
+       { "pkg":"EAP-prim" }
+       
+        
+        
+        ]
+    },
+    {
+      "host": "svo-clu-02",
+      "packages" : [
+
+       { "pkg":"EAP-sec"  },
+       { "pkg":"EAP-prim" }
+        
+        
+        ]
+    }
+  ]
+}
+
+
+///////////////////////
+{
+  "hosts": [
+    {
+      "host": "mlk-clu-01",
+      "packages" : [
+       { "pkg":"EAP-sec" ,
+         "res": [
+          {"id":"second-script","status":"R"},
+          {"id":"aep-di","status":"R"}           
+           ]
+         
+       },
+       { "pkg":"EAP-prim" ,
+         "res": [
+          {"id":"prim-script","status":"R"},
+          {"id":"eap-ci","status":"R"}           
+           ]
+          
+         
+         
+       }
+       
+        
+        
+        ]
+    },
+    {
+      "host": "svo-clu-02",
+      "packages" : [
+
+       { "pkg":"EAP-sec",
+         "res": [
+          {"id":"second-script","status":"R"},
+          {"id":"aep-di","status":"R"}           
+           ]       
+         
+         
+         
+       },
+       { "pkg":"EAP-prim",
+ 
+         "res": [
+          {"id":"prim-script","status":"R"},
+          {"id":"eap-ci","status":"R"}           
+           ]
+
+       }
+        
+        
+        ]
+    }
+  ]
+}
+		
+/*		
+		String cStatus = gData.readFileToString("/usr/nvs/server1/status.txt");
+		String myName = this.params.get("ID");
+		
+		String[] parts = cStatus.split(";");
+		
+		for(int i=0; i< parts.length; i++) {
+			if(parts[i].contains(myName)) {
+				String[] parts2 = parts[i].split(":");
+				
+				out = parts2[1];
+				
+			}
+		}
+		

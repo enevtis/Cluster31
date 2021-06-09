@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<nodes>
+<clusterNodes>
+    <node id="mlk-bo-asp">
+        <staticIp>192.168.20.71</staticIp>
+        <descr>Сервер приложений в ЦОД-М</descr>
+		<hostname>mlk-bo-asp</hostname>
+        <clusterName>MLK</clusterName>
+		<canBeMaster>no</canBeMaster> 
+		
+		<pack id="APP-BO">
+                <res id="BOBJ-BI"></res>
+                <res id="Tomcat"></res>
+        </pack>
+
+        </node>
+ 
+	<node id="mlk-bo-dbp">
+        <staticIp>192.168.20.72</staticIp>
+        <descr>Сервер БД в ЦОД-М</descr> 
+		<hostname>mlk-bo-dbp</hostname>
+        <clusterName>MLK</clusterName>
+		<canBeMaster>yes</canBeMaster>
+        <pack id="DB-HANA">
+                <res id="HD1"><id>HD1</id><nr>10</nr><takeover>takeover_HD1.sh</takeover></res>
+                <res id="IP-BP-CI"><ip>192.168.20.20</ip><activate>script1.sh</activate></res>
+        </pack>
+    </node>
+ 
+    <node id="svo-bo-asp">
+        <staticIp>192.168.20.73</staticIp>
+        <descr>Сервер приложений в ЦОД-Р</descr> 
+		<hostname>mlk-bo-asp</hostname>
+        <clusterName>SVO</clusterName>
+		<canBeMaster>no</canBeMaster> 
+		
+		<pack id="APP-BO">
+                <res id="BOBJ-BI"></res>
+                <res id="Tomcat"></res>
+        </pack>
+
+        </node>
+ 
+	<node id="svo-bo-dbp">
+        <staticIp>192.168.20.74</staticIp>
+         <descr>Сервер БД в ЦОД-Р</descr>
+		<hostname>mlk-bo-dsp</hostname>
+        <clusterName>SVO</clusterName>
+		<canBeMaster>yes</canBeMaster>
+        <pack id="DB-HANA">
+                <res id="HD1"><id>HD1</id><nr>10</nr><takeover>takeover_HD1.sh</takeover></res>
+                <res id="IP-BP-CI"><ip>192.168.20.20</ip><activate>script1.sh</activate></res>
+        </pack>
+    </node>
+
+
+</clusterNodes>
+</nodes>

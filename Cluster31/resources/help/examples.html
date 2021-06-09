@@ -1,0 +1,270 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+	<link rel="icon" href="../img/nvs.png">
+    <title>examples</title>
+    <link rel="stylesheet" href="../src/style.css">
+   </head>
+<body>
+
+<h1> Configuration examples: </h1>
+
+
+
+<h2>Example configuration of 4-node SAP&reg; SAP Business Objects BI on HANA cluster </h2>
+Below is shown an example of configuration with 4-node High-available cluster SAP&reg; SAP Business Objects BI on HANA database
+without optional quorum server.<br>
+<img src='img/example.png'> 
+<br>If you want using automatic failover feature you should add this one on dedicated hardware.
+<ul>
+<li>application servers: mlk-bo-asp, mlk-bo-dbp - SAP BO BI 4.2 on AIX 7.2
+<li>database: SAP&reg; mlk-bo-dbp , svo-bo-dbp Hana database on SUSE Linux 12 sp5 on IBM Power with replication between nodes (called as MLK and SVO) 
+
+
+
+</ul>
+<hr>
+<h3> nodes.xml </h3>
+<code>
+
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;<br>
+&lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;<br>
+
+&lt;nodes&gt;<br>
+&lt;clusterNodes&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;node id="mlk-bo-asp"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;ip&gt;192.168.20.71&lt;/ip&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;descr&gt;Сервер приложений в ЦОД-М&lt;/descr&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;hostname&gt;mlk-bo-asp&lt;/hostname&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;clusterName&gt;MLK&lt;/clusterName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;canBeMaster&gt;no&lt;/canBeMaster&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;image&gt;slade&lt;/image&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;left&gt;120&lt;/left&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;top&gt;150&lt;/top&gt;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;pack id="APP-BO"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;res id="BOBJ-BI"&gt;&lt;/res&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;res id="Tomcat"&gt;&lt;/res&gt;<br>
+&nbsp;&nbsp;&lt;/pack&gt;<br>
+
+&nbsp;&nbsp;&lt;/node&gt;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;node id="mlk-bo-dbp"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;ip&gt;192.168.20.72&lt;/ip&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;descr&gt;Сервер БД в ЦОД-М&lt;/descr&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;hostname&gt;mlk-bo-dbp&lt;/hostname&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;clusterName&gt;MLK&lt;/clusterName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;canBeMaster&gt;yes&lt;/canBeMaster&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;autoStartScenario&gt;autostart_MLK&lt;/autoStartScenario&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;switchoverScenario&gt;switchover_to_MLK&lt;/switchoverScenario&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;image&gt;bigtower&lt;/image&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;left&gt;120&lt;/left&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;top&gt;250&lt;/top&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;pack id="DB-HANA"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;res id="HD1"&gt;&lt;takeover&gt;takeover_HD1.sh&lt;/takeover&gt;&lt;/res&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/pack&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;pack id="DNS-changer"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;res id="IP-BP-CI"&gt;&lt;activate&gt;script1.sh&lt;/activate&gt;&lt;/res&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/pack&gt;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/node&gt;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;node id="svo-bo-asp"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;ip&gt;192.168.20.73&lt;/ip&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;descr&gt;Сервер приложений в ЦОД-Р&lt;/descr&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;hostname&gt;svo-bo-asp&lt;/hostname&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;clusterName&gt;SVO&lt;/clusterName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;canBeMaster&gt;no&lt;/canBeMaster&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;image&gt;slade&lt;/image&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;left&gt;500&lt;/left&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;top&gt;150&lt;/top&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;pack id="APP-BO"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;res id="BOBJ-BI"&gt;&lt;/res&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;res id="Tomcat"&gt;&lt;/res&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/pack&gt;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/node&gt;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;node id="svo-bo-dbp"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;ip&gt;192.168.20.74&lt;/ip&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;descr&gt;Сервер БД в ЦОД-Р&lt;/descr&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;hostname&gt;mlk-bo-dsp&lt;/hostname&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;clusterName&gt;SVO&lt;/clusterName&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;canBeMaster&gt;yes&lt;/canBeMaster&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;autoStartScenario&gt;autostart_SVO&lt;/autoStartScenario&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;switchoverScenario&gt;switchover_to_SVO&lt;/switchoverScenario&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;image&gt;bigtower&lt;/image&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;left&gt;500&lt;/left&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;top&gt;250&lt;/top&gt;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;pack id="DB-HANA"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;res id="HD1"&gt;&lt;takeover&gt;takeover_HD1.sh&lt;/takeover&gt;&lt;/res&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;;/pack&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;pack id="DNS-changer"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;res id="IP-BP-CI"&gt;&lt;activate&gt;script1.sh&lt;/activate&gt;&lt;/res&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/pack&gt;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;/node&gt;<br>
+
+&lt;/clusterNodes&gt;<br>
+&lt;/nodes&gt;<br>
+
+
+
+</code>
+<hr>
+
+
+
+</code>
+<h3> Scenario examples </h3>
+<code>
+&lt;?xml version="1.0" encoding="utf-8" ?&gt;<br>
+&lt;!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd"&gt;<br>
+
+&nbsp;&lt;scenario id="autostart_MLK"&gt;<br>
+&nbsp;&nbsp;&lt;scenarioSteps&gt;<br>
+&nbsp;&nbsp;&nbsp;&lt;step id="1"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;node&gt;mlk-bo-dbp&lt;/node&gt;&lt;pack&gt;DB-HANA&lt;/pack&gt;&lt;action&gt;start&lt;/action&gt;&lt;descr&gt;старт БД MLK (основной ЦОД)
+&lt;/descr&gt;&lt;wait&gt;yes&lt;/wait&gt;&lt;pause&gt;10&lt;/pause&gt;<br>
+&nbsp;&nbsp;&nbsp;&lt;/step&gt;<br>
+&nbsp;&nbsp;&lt;step id="2"&gt;<br>
+&nbsp;&nbsp;&nbsp;&lt;node&gt;mlk-bo-asp&lt;/node&gt;&lt;pack&gt;APP-BO&lt;/pack&gt;&lt;action&gt;start&lt;/action&gt;&lt;descr&gt;запуск пакета SAP BO BI
+&lt;/descr&gt;&lt;wait&gt;yes&lt;/wait&gt;&lt;pause&gt;10&lt;/pause&gt;<br>
+&nbsp;&nbsp;&lt;/step&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;step id="3"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;node&gt;svo-bo-dbp&lt;/node&gt;&lt;pack&gt;DB-HANA&lt;/pack&gt;&lt;action&gt;start&lt;/action&gt;&lt;descr&gt;старт БД MLK (запасной ЦОД)
+&lt;/descr&gt;&lt;wait&gt;yes&lt;/wait&gt;&lt;pause&gt;10&lt;/pause&gt;<br>
+&nbsp;&nbsp;&lt;/step&gt;<br>
+&nbsp;&lt;/scenarioSteps&gt;<br>
+&nbsp;&lt;/scenario&gt;<br>
+
+</code>
+
+<h3> Scripts examples </h3>
+Here are example scripts type &lt;ID&gt;_start.sh, &lt;ID&gt;_stop.sh, &lt;ID&gt;_status.sh, for resource http-server Tomcat for SAP&reg; Business Objects BI<br>
+Name of owner installation is ds1adm. <br> 
+Command "kill" is added for sure in order to avoid error due occupated port by previous processes. <br>
+<br>
+<code>
+more Tomcat_start.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+&nbsp;&nbsp;PORT=8080<br>
+&nbsp;&nbsp;kill -9 $(netstat -tupln | grep $PORT | awk '{ print $7}' | sed 's:/[^/]*$::')<br>
+&nbsp;&nbsp;PORT=8005<br>
+&nbsp;&nbsp;kill -9 $(netstat -tupln | grep $PORT | awk '{ print $7}' | sed 's:/[^/]*$::')<br>
+<br>
+&nbsp;&nbsp;su - ds1adm -c "sap_bobj/tomcatstartup.sh"<br>
+</code>
+<hr>
+<code>
+more Tomcat_stop.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+&nbsp;&nbsp;su - ds1adm -c "sap_bobj/tomcatshutdown.sh"<br>
+</code>
+<hr>
+<code>
+more Tomcat_status.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+
+&nbsp;&nbsp;TIMEOUT=2 # in seconds<br>
+&nbsp;&nbsp;PORT=8080<br>
+&nbsp;&nbsp;timeout $TIMEOUT bash -c &#34;&lt;/dev/tcp/localhost/$PORT&#34; &gt; /dev/null 2>&#38;1<br>
+
+&nbsp;&nbsp;if [ $? -eq 0 ]<br>
+&nbsp;&nbsp;&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "U"<br>
+&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "D"<br>
+&nbsp;&nbsp;fi<br>
+</code>
+<br>
+Exit characters:<br>
+<ul>
+<li>"U" means Up,Running,Green arrow in GUI
+<li>"D" - Down,Stopped,Blue arrow in GUI
+<li>"W" (Optional)- Waiting, Sand clock in GUI
+<li>"E" (Optional) Error, Stopped improperly, Red cross in GUI
+</ul>
+
+<hr>
+<code>
+more BO-server_start.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+&nbsp;&nbsp;PORT=6410<br>
+&nbsp;&nbsp;kill -9 $(netstat -tupln | grep $PORT | awk '{ print $7}' | sed 's:/[^/]*$::')<br>
+<br>
+&nbsp;&nbsp;su - ds1adm -c "sap_bobj/startservers"<br>
+</code>
+<hr>
+<code>
+more BO-server_stop.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+&nbsp;&nbsp;su - ds1adm -c "sap_bobj/stopservers"<br>
+</code>
+<hr>
+<code>
+more BO-server_status.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+&nbsp;&nbsp;TIMEOUT=2 # in seconds<br>
+&nbsp;&nbsp;PORT=6410<br>
+&nbsp;&nbsp;timeout $TIMEOUT bash -c &#34;&lt;/dev/tcp/localhost/$PORT&#34; &gt; /dev/null 2>&#38;1<br>
+&nbsp;&nbsp;if [ $? -eq 0 ]<br>
+&nbsp;&nbsp;&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "U"<br>
+&nbsp;&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "D"<br>
+&nbsp;&nbsp;fi<br>
+</code>
+<hr>
+<code>
+more BO-FS-sync_start.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+&nbsp;&nbsp;croncmd="/clu/conf/scripts/BO-FS-sync_run.sh"<br>
+&nbsp;&nbsp;cronjob="* * * * * $croncmd"<br>
+&nbsp;&nbsp;( crontab -l | grep -v -F "#" | grep -v -F "$croncmd" ; echo "$cronjob" ; echo "#Attention! Crontab is rewrited by cluster script!" ) | crontab -<br>
+</code>
+<hr>
+<code>
+more BO-FS-sync_stop.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+&nbsp;&nbsp;croncmd="/clu/conf/scripts/BO-FS-sync_run.sh"<br>
+&nbsp;&nbsp;cronjob="* * * * * $croncmd"<br>
+
+&nbsp;&nbsp;( crontab -l | grep -v -F "$croncmd" | grep -v -F "# ") | crontab -<br>
+</code>
+<hr>
+<code>
+more BO-FS-sync_status.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+
+&nbsp;&nbsp;SCRIPT=BO-FS-sync_run.sh<br>
+&nbsp;&nbsp;COUNTER=`crontab -l 2>/dev/null | grep $SCRIPT | wc -l`<br>
+
+&nbsp;&nbsp;if [ $COUNTER -gt 0 ]<br>
+&nbsp;&nbsp;then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;  echo "U"<br>
+&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;  echo "D"<br>
+&nbsp;&nbsp;fi<br>
+
+</code>
+<hr>
+<code>
+more BO-FS-sync_run.sh<br>
+&nbsp;&nbsp;#!/bin/bash<br>
+&nbsp;&nbsp;if [ "$HOSTNAME" = "opsbi-bi1" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rsync -avzh /usr/sap/DS1/sap_bobj/data/frsinput/*  opsbi-bi2:/usr/sap/DS1/sap_bobj/data/frsinput/<br>
+&nbsp;&nbsp;elif [ "$HOSTNAME" = "opsbi-bi2" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rsync -avzh /usr/sap/DS1/sap_bobj/data/frsinput/*  opsbi-bi1:/usr/sap/DS1/sap_bobj/data/frsinput/<br>
+&nbsp;&nbsp;else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "Unknown host was ignored.";<br>
+&nbsp;&nbsp;fi<br>
+
+
+</code>
+
+
+</body>
+</html>

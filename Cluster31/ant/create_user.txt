@@ -1,0 +1,2 @@
+useradd -m -d /home/greenex -s /bin/bash greenex
+passwd greenex

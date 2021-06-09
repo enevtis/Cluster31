@@ -1,0 +1,40 @@
+
+Сканирование по сценариям.
+		
+		for (Map.Entry<String, List<CluScenarioStep>> set : gData.scenarioList.entrySet()) {
+			   
+			List<CluScenarioStep> scenario = set.getValue();
+			
+			out += "сценарий: " + set.getKey() ;
+			
+			out += "<ol>";
+			
+			for(CluScenarioStep s: scenario) {
+				
+						
+				out += "<li>" + s.id;
+				
+				for (Map.Entry<String, String> set2 : s.params.entrySet()) {
+					
+								
+						out += "("+ set2.getKey() + " = " + set2.getValue() + ")";
+				
+						}
+			
+			
+			}
+
+			out += "</ol>";
+		}
+
+		
+
+Create Table persons (
+   ID INTEGER,
+   NAME VARCHAR(100),
+   PRIMARY KEY (ID)
+);
+insert into persons values  (1,'Невтис Евгений Петрович');
+insert into persons values  (2,'Федулов Сергей Валерьевич');
+insert into persons values  (3,'Маликов Ростислав Вадимович');
+insert into persons values  (4,'Молокошер Михаил Михайлович');
