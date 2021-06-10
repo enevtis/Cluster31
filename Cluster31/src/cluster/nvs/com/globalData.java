@@ -220,6 +220,8 @@ public class globalData {
 
 		return out;
 	}
+
+
 	public void saveToLog(String outText, String fileName) {
 
 		String fullFileName = this.mainPath + File.separator + "log" + File.separator + fileName + ".log";
@@ -300,6 +302,7 @@ public class globalData {
 		out = f.exists() ? true : false;
 		return out;
 	}
+
 	public boolean checkScenarioRun() {
 		boolean result = false;
 		
@@ -327,6 +330,8 @@ public class globalData {
 		}
 
 	}
+
+	
 	public CluNode getOwnNode() {
 
 		CluNode out = null;
@@ -363,16 +368,19 @@ public class globalData {
 
 		
 		
-		/*		addToTrans("","","");	*/		
+//				addToTrans("","","");			
 
 
 	
 	}
+	
+
 	protected void addToTrans(String enWord, String deWord, String ruWord) {
 
 		msgText.put(enWord + "_DE", deWord);
 		msgText.put(enWord + "_RU", ruWord);
 	}
+
 
 	public String tr(String word) {
 		String out = "";
@@ -410,6 +418,9 @@ public class globalData {
 		return out;
 
 	}
+
+	
+	
 	public CluNode getMasterNode() throws Exception {
 
 		CluNode out = null;
@@ -447,6 +458,9 @@ public class globalData {
 
 		return out;
 	}
+
+
+	
 	public String determineRole() {
 
 		String out = "slave";
@@ -495,6 +509,7 @@ public class globalData {
 		return out;
 
 	}
+
 	public boolean checkAbort() {
 		boolean out = false;
 		String pauseFileName = this.mainPath + File.separator + "tmp" + File.separator + "abort";
@@ -503,4 +518,5 @@ public class globalData {
 		out = f.exists() ? true : false;
 		return out;
 	}
+
 }
