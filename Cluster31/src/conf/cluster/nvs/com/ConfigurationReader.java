@@ -34,7 +34,6 @@ import obj.cluster.nvs.com.CluRemoteSystem;
 import obj.cluster.nvs.com.CluResource;
 import obj.cluster.nvs.com.CluScenarioStep;
 import simplecrypto.nvs.com.SimpleCrypto;
-import utils.cluster.nvs.com.Utils;
 
 public class ConfigurationReader {
 

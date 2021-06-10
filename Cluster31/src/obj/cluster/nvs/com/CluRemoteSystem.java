@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import obj.cluster.nvs.com.CluNode;
-
 public class CluRemoteSystem {
 	public String id;
 	public String lastMasterIp;

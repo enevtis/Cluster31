@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+	<link rel="icon" href="../img/nvs.png">
+    <title>SAP HANA administration tips</title>
+    <link rel="stylesheet" href="../src/style.css">
+   </head>
+<body>
+
+<h1> SAP HANA administration memo: </h1>
+
+
+
+<h2>Action for activating of replication between two datacenters: </h2>
+
+For example, we have two-node cluster:
+
+ 
+
+<ul>
+<li>servers: mlk-erp-pra, svo-erp-prb
+<li>database: SAP&reg; Hana database (NR=10) with replication between nodes (called as MLK and SVO) 
+</ul>
+<hr>
+<h3> Manually actions for replication setup: </h3>
+<ul>
+<li> On first node make backup, if we are activating fresh installation:<br><br>
+<code>
+hepadm@mlk-erp-pra:&gt; hdbsql -i 10 -u system -p Zaqwerty12 -d SYSTEMDB "BACKUP DATA USING FILE ('/backup/HEP_systemdb')"<br>
+hepadm@mlk-erp-pra:&gt; hdbsql -i 10 -u system -p Zaqwerty12 -d HEP "BACKUP DATA USING FILE ('/backup/HEP_tenant')"<br>
+</code>
+<br>
+<li> On first node give permissions on replication:<br><br>
+<code>
+hepadm@mlk-erp-pra:&gt;hdbnsutil -sr_enable --name=MLK<br>
+</code><br>
+<li> On second node register secondary database into primary:<br>
+You must stop secondary DB before oreration:<br><br>
+<code>
+hepadm@svo-erp-prb:&gt;HDB stop<br>
+hepadm@svo-erp-prb:&gt;hdbnsutil -sr_register --name=SVO --replicationMode=sync --remoteHost=mlk-erp-pra --remoteInstance=10<br>
+</code>
+<br> Probably you will be obligated to copy keys from first node to second. Follow to instructions from command string.<br> 
+<br>
+<code>
+hepadm@svo-erp-prb:&gt;HDB start<br><br>
+</code>
+
+<li> On second node start secondary database and make sure replication has began (or via Hana Studio):<br><br>
+<code>
+hepadm@svo-erp-prb:&gt;hdbnsutil -sr_state<br>
+
+</code><br>
+
+</ul>
+
+<h3> Manually takover to make formerly standby database primary one: </h3>
+<ul><code>
+<li>hepadm@svo-erp-prb:&gt;hdbnsutil -sr_takeover<br>
+</code></ul>
+<br>If need it, re-register formerly primary DB as secondary in order to reverse replication.
+<h3> Manually activate formerly standby database without impact on primary one: </h3>
+<ul><code>
+<li>hepadm@svo-erp-prb:HDB stop
+<li>hepadm@svo-erp-prb:hdbnsutil -sr_unregister
+<li>hepadm@svo-erp-prb:HDB start
+</code></ul>
+More details you will find in SAP&reg HANA Administration Guide or <br>
+note 1945676 - Correct usage of hdbnsutil -sr_unregister.
+
+
+</body>
+</html>
