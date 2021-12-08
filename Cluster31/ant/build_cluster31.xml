@@ -9,7 +9,7 @@ http://ant.apache.org/manual/tutorial-HelloWorldWithAnt.html
         <property name="version"            value="3.1"/>
         <property name="main.class.name"    value="cluster.nvs.com.ClusterMain"/> 
  
-        <property name="dev.home.dir"       value="C:\dev\greenex2\"/>
+        <property name="dev.home.dir"       value="C:\Users\evgen\git\repository2\"/>
  
  
         <property name="ant.project.name"   value="Cluster31"/> 
@@ -26,6 +26,7 @@ http://ant.apache.org/manual/tutorial-HelloWorldWithAnt.html
         <property name="classes.dir"        value="${dev.home.dir}${ant.project.name}/build/classes"/> 
         <property name="jar.dir"            value="${dev.home.dir}${ant.project.name}/out"/>  
         
+
 
 	<property name="mnt_1.dir"      value="E:\"/>
 	<property name="mnt_2.dir"      value="F:\"/>
@@ -105,18 +106,21 @@ http://ant.apache.org/manual/tutorial-HelloWorldWithAnt.html
             </manifest>
         </jar>
                 
-                <copy file="${jar.dir}/${output.jar.name}" todir="${mnt_1.dir}"/>
-		<copy file="${jar.dir}/${output.jar.name}" todir="${mnt_2.dir}"/>
-                <copy file="${jar.dir}/${output.jar.name}" todir="${mnt_3.dir}"/>
+                
+				
+				
+	 <copy file="${jar.dir}/${output.jar.name}" todir="${mnt_1.dir}"/>
+<!--	 <copy file="${jar.dir}/${output.jar.name}" todir="${mnt_2.dir}"/>	-->
+         <copy file="${jar.dir}/${output.jar.name}" todir="${mnt_3.dir}"/>
 
 
 	
   	<exec executable="cmd">
     	<arg value="/c"/>
-   	<arg value="C:\dev\greenex2\Cluster31\ant\restart_cluster31.bat"/> 
+   	<arg value="C:\Users\evgen\git\repository2\Cluster31\ant\restart_cluster31.bat"/> 
      	</exec>
-
-
+<!--
+-->
         
     </target>
 

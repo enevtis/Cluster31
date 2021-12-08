@@ -277,6 +277,7 @@ public class ConfigurationReader {
 
 	public boolean determineMasterRole() {
 
+
 		boolean out = true;
 		String osUser = "root";
 		String myHostName = gData.getOwnHostname();
@@ -287,14 +288,18 @@ public class ConfigurationReader {
 
 		gData.logger.info("Determination master node : My host (" + myHostName + ")");
 
-		if (!myN.params.get("canBeMaster").equals("yes")) {
-
-			gData.logger.info("Parameter canBeMaster <> yes, I cannot be master :-( I am always slave");
+		
+		if (myN == null) { 
+			gData.logger.info("ERROR! It seems the system is not correct configured yet...") ;
 			return false;
 		}
+	
 
-		
-		
+		 if (!myN.params.get("canBeMaster").equals("yes")) {
+			gData.logger.info("Parameter canBeMaster <> yes, I cannot be master :-( I am always slave");
+			return false;
+		 }
+	
 
 		////////// Single node can be ONLY master ////
 		if(gData.nodes.size() ==1) {	

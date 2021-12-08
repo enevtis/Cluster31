@@ -31,8 +31,6 @@ public class NeServer extends Thread {
 	
 
 			int port = Integer.valueOf(gData.commonParams.get("webServicePort"));
-			
-			
 	
 			try {
 

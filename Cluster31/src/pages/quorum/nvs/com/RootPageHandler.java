@@ -59,7 +59,8 @@ public class RootPageHandler extends HandlerTemplate{
 		out += " onclick='showMenu(this.id)';\" ";
 		out += ">";		
 
-		out += "<p class='caption1'>&nbsp;&nbsp;&nbsp;&nbsp;<b>Кворум сервер</b> </p>";
+		out += "<p class='caption1'>&nbsp;&nbsp;&nbsp;&nbsp;<b>quorum server</b> </p>";
+		
 		
 		
 		out += strPopupMenu();

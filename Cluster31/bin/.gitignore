@@ -1,10 +1,6 @@
-/cluster/
-/conf/
-/diag/
 /neserver/
 /obj/
 /pages/
 /quorum/
 /scenario/
 /utils/
-/auto/

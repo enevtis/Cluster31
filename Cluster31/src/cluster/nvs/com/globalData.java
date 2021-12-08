@@ -126,7 +126,14 @@ public class globalData {
 		cr.readAllScenarios(scenarioList);
 		cr.setMaxTopCoordinateOfNodeOnMainPage();
 
-		IamMaster = cr.determineMasterRole();
+		try {
+			IamMaster = cr.determineMasterRole();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			IamMaster = false;
+			e.printStackTrace();
+		}
 		thereIsReplication = this.nodes.size() > 1 ? true : false;	
 		
 		translate_init();
