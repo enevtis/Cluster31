@@ -114,7 +114,7 @@ public class globalData {
 			this.lang = this.commonParams.get("interfaceLang");
 		
 		
-		
+			
 	}
 	
 	public void init_agent() {
